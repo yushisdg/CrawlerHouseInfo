@@ -108,8 +108,44 @@ def queryLianjiaCommunityByEnvelope(xmin,ymin, xmax, ymax, comUrl,houseTabUrl, f
                 recordDict["name"] = name;
                 recordDict["longitude"] = longitude;
                 recordDict["latitude"] = latitude;
+                recordDict["fromWeb"]=fromWeb;
+                recordDict["communityPrice"]=0;
+                addOneCommunityIntoDB(recordDict);
     except Exception as e:
         print(e);
+
+
+def addOneCommunityIntoDB(communityVo):
+    print(communityVo)
+    id=communityVo["id"];
+    name=communityVo["name"];
+    longitude = communityVo["longitude"];
+    latitude = communityVo["latitude"];
+    communityPrice=communityVo["communityPrice"];
+    print(communityPrice)
+    if(communityPrice==None):
+        communityPrice=0;
+    if(name==None):
+        name="None";
+    fromWeb=communityVo["fromWeb"];
+    gaodePoint = bd_decrypt(longitude,latitude);
+    geomStr = "POINT(" + str(gaodePoint["lng"]) + " " + str(gaodePoint["lat"]) + ")";
+    print(geomStr)
+    sql="INSERT INTO web_community (id, name, longitude, latitude, geom, from_web, community_price) VALUES ('"+id+"', '"+name+"', '"+str(longitude)+"', '"+str(latitude)+"', "+"st_geomfromText('"+geomStr+"',4326)"+", '"+fromWeb+"', '46375');";
+    print(sql)
+    conn = psycopg2.connect(database=dataBase, user=user, password=password, host=host, port=port);
+    cur = conn.cursor();
+    try:
+        cur.execute(sql);
+        conn.commit();
+        cur.close();
+        conn.close();
+    except Exception as e:
+        print(e);
+    finally:
+        conn.commit();
+        cur.close();
+        conn.close();
 
 
 
