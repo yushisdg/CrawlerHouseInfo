@@ -108,10 +108,16 @@ def queryLianjiaCommunityByEnvelope(xmin,ymin, xmax, ymax, comUrl,houseTabUrl, f
                 recordDict["name"] = name;
                 recordDict["longitude"] = longitude;
                 recordDict["latitude"] = latitude;
+                recordDict["fromWeb"] = fromWeb;
     except Exception as e:
         print(e);
 
+def iWebCommunitySvcAddOneRecord(recordDict):
+    conn = psycopg2.connect(database=dataBase, user=user, password=password, host=host, port=port);
+    cur = conn.cursor();
+    sql = "INSERT INTO web_community (id, name, longitude, latitude, geom, from_web, community_price) VALUES ('20931', '大塘新村', '120.16145', '30.28678', '0101000020E6100000B2F4A10BEA095E40317E1AF7E6473E40', 'woaiwojia', '46375');";
 
+    return 0;
 
 
 CrawlerHouseByCityCode("3301");
