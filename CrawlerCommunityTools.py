@@ -33,7 +33,6 @@ def queryWhereCityByItem(xmin,ymin,xmax,ymax):
              fromWeb=item["fromWeb"];
              comUrl=item["data"]["comUrl"];
              houseUrl=item["data"]["houseUrl"];
-
              if(fromWeb=="lianjia"):
                 queryLianjiaCommunityByEnvelope(xmin, ymin, xmax, ymax, comUrl, houseUrl, fromWeb);
              elif(fromWeb=="anjuke"):
@@ -127,11 +126,12 @@ def queryFangTianxiaCommunityByEnvelope(xmin,ymin, xmax, ymax, comUrl,houseTabUr
     fromWeb = "fangtianxia";
     baiduMinPoint = bd_encrypt(xmin, ymin);
     baiduMaxPoint = bd_encrypt(xmax, ymax);
-    url = "http://esf."+comUrl+".fang.com/map/?x1=" + str(baiduMinPoint["lng"]) + "&y1=" + str(baiduMinPoint["lat"]) + "&x2=" +str(baiduMaxPoint["lng"])  + "&y2=" +str(baiduMaxPoint["lat"])  + "&zoom=16&a=ajaxSearch";
-    houseUrl="http://esf."+comUrl+".fang.com/map/?x1=" + str(xmin)+ "&y1=" + str(ymin) + "&x2=" +str(xmax) + "&y2=" + str(ymax) + "&zoom=16&a=ajaxSearch";
+    url = "http://zu."+comUrl+".fang.com/map/?x1=" + str(baiduMinPoint["lng"]) + "&y1=" + str(baiduMinPoint["lat"]) + "&x2=" +str(baiduMaxPoint["lng"])  + "&y2=" +str(baiduMaxPoint["lat"])  + "&zoom=16&a=ajaxSearch";
+    houseUrl="http://zu."+comUrl+".fang.com/map/?x1=" + str(xmin)+ "&y1=" + str(ymin) + "&x2=" +str(xmax) + "&y2=" + str(ymax) + "&zoom=16&a=ajaxSearch";
     try:
         res = requests.get(url=url).content;
         total_json = json.loads(res);
+        print(total_json)
         content = total_json.get('loupan');
         if (content != None):
             hit=content.get("hit");
@@ -154,7 +154,9 @@ def queryFangTianxiaCommunityByEnvelope(xmin,ymin, xmax, ymax, comUrl,houseTabUr
                     addOneCommunityIntoDB(recordDict);
                     idArr.append(id);
                 for ids in idArr:
-                    reqUrl = houseUrl + ids;
+                    reqUrl = url+"&newCode=" + ids;
+                    print(reqUrl);
+                    addFangTianXiaHouseFromWeb(reqUrl,fromWeb);
     except Exception as e:
         print(e);
 

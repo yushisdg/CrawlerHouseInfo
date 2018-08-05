@@ -39,27 +39,37 @@ def addFangTianXiaHouseFromWeb(url,fromWeb):
         res = requests.get(url=url).content;
         total_json = json.loads(res);
         content = total_json.get('list');
+        print(content)
         if (content != None):
             soup = BeautifulSoup(content, 'html.parser', from_encoding='utf-8');
-            list=content.get("list");
-            if(list!=None):
-                records=[];
-                for record in list:
-                    id =record.get("house_code");
-                    price =record.get("price_total");
-                    area =record.get("rent_area");
-                    name =record.get("community_name");
-                    communityId =record.get("community_id");
-                    recordDict={};
-                    recordDict["id"]=id;
-                    recordDict["price"]=price;
-                    recordDict["name"]=name;
-                    recordDict["communityId"]=communityId;
-                    recordDict["community_name"]=name;
-                    recordDict["area"] = area;
-                    recordDict["fromWeb"]=fromWeb;
-                    records.append(recordDict);
-                addOneHouseIntoDB(records);
+            houseListContent = soup.find(class_="houseList");
+            houseList=houseListContent.find_all("dl");
+            comNameObject=soup.find(class_="fr");
+            comName=comNameObject.find("h3").contents[0];
+            records=[];
+            for house in houseList:
+              a_tab=house.find("a");
+              com_id=a_tab.attrs['data_id'];
+              href=a_tab.attrs['href'];
+              house_id=href.replace(".htm","").replace("http://","").replace("zu.","").replace(".fang.com/chuzu/","")
+              print(house_id)
+              price=house.find(class_="price").contents
+              house_price = price[0].replace("  ", "");
+              areaContent=house.find(class_="gray6 mt10 font12").contents
+              areaIndex=areaContent[0].find("㎡");
+              emptyIndex=areaContent[0].find(" ");
+              area=areaContent[0][emptyIndex :areaIndex].replace(" ","")
+              print(area)
+
+              recordDict={};
+              recordDict["id"]=house_id;
+              recordDict["price"]=house_price;
+              recordDict["communityId"]=com_id;
+              recordDict["community_name"]=comName;
+              recordDict["area"] = area;
+              recordDict["fromWeb"]=fromWeb;
+              records.append(recordDict);
+            addOneHouseIntoDB(records);
     except Exception as e:
         print(e);
 
