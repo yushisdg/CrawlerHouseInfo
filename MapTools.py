@@ -8,7 +8,6 @@ def queryPointInWhereCity(x,y):
     lng=location["x"];
     lat=location["y"];
     url = "https://api.map.baidu.com/?qt=rgc&x=" + str(lng) + "&y=" +str(lat) + "&dis_poi=100&poi_num=10&ie=utf-8&oue=1&res=webmap";
-    print(url)
     cityName="null"
     try:
         res = requests.get(url=url).content;

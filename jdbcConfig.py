@@ -1,5 +1,5 @@
-dataBase = "renting_strategy"
+dataBase = "postgres"
 user = "postgres";
-password = "123456"
-host = "localhost"
+password = "zufang"
+host = "193.112.17.218"
 port = 5432

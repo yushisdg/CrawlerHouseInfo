@@ -7,7 +7,6 @@ def getCityGridsMinIndexAndMaxIndexByCityCode(cityCode):
     conn = psycopg2.connect(database=dataBase, user=user, password=password, host=host, port=port);
     cur = conn.cursor();
     sql="SELECT min(t.grid_index), max(t.grid_index) from geomtools_grid t where t.code='"+cityCode+"'";
-    print(sql)
     try:
         cur.execute(sql);
         keyData = cur.fetchall();
