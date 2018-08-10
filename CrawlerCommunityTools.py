@@ -11,6 +11,7 @@ from CrawlerHouseInfo.CrawlerHouseTools import *
 import threading
 
 def CrawlerHouseByCityCode(cityCode):
+    print(cityCode)
     indexDict=getCityGridsMinIndexAndMaxIndexByCityCode(cityCode);
     for index in range(indexDict["minIndex"],indexDict["maxIndex"]):
     # for index in range(1550, indexDict["maxIndex"]):
@@ -21,7 +22,7 @@ def CrawlerHouseByCityCode(cityCode):
            xmax=gridDict['xmax'] ;
            ymax=gridDict['ymax'];
            queryWhereCityByItem(xmin,ymin,xmax,ymax);
-           sleepTime = random.randint(4, 7);
+           sleepTime = random.randint(10, 15);
            print(sleepTime);
            time.sleep(sleepTime);
     return 0;
@@ -431,7 +432,57 @@ def addOneCommunityIntoDB(communityVos):
 # CrawlerHouseByCityCode("3101");
 # CrawlerHouseByCityCode("3301");
 
-t1=threading.Thread(target=CrawlerHouseByCityCode,args=("3101",))
-t1.start()
-t2=threading.Thread(target=CrawlerHouseByCityCode,args=("3301",))
-t2.start()
+threading.Thread(target=CrawlerHouseByCityCode,args=("4301",)).start()
+
+threading.Thread(target=CrawlerHouseByCityCode,args=("3302",)).start()
+
+
+threading.Thread(target=CrawlerHouseByCityCode,args=("4401",)).start()
+
+threading.Thread(target=CrawlerHouseByCityCode,args=("4403",)).start()
+
+
+threading.Thread(target=CrawlerHouseByCityCode,args=("1101",)).start()
+
+threading.Thread(target=CrawlerHouseByCityCode,args=("1201",)).start()
+
+
+threading.Thread(target=CrawlerHouseByCityCode,args=("3501",)).start()
+
+threading.Thread(target=CrawlerHouseByCityCode,args=("3502",)).start()
+
+
+# threading.Thread(target=CrawlerHouseByCityCode,args=("3101",)).start()
+#
+# threading.Thread(target=CrawlerHouseByCityCode,args=("3301",)).start()
+
+threading.Thread(target=CrawlerHouseByCityCode,args=("3601",)).start()
+
+threading.Thread(target=CrawlerHouseByCityCode,args=("5301",)).start()
+
+
+threading.Thread(target=CrawlerHouseByCityCode,args=("6101",)).start()
+
+threading.Thread(target=CrawlerHouseByCityCode,args=("4101",)).start()
+
+
+threading.Thread(target=CrawlerHouseByCityCode,args=("3205",)).start()
+
+threading.Thread(target=CrawlerHouseByCityCode,args=("3201",)).start()
+
+
+threading.Thread(target=CrawlerHouseByCityCode,args=("3202",)).start()
+
+threading.Thread(target=CrawlerHouseByCityCode,args=("3702",)).start()
+
+
+
+threading.Thread(target=CrawlerHouseByCityCode,args=("3701",)).start()
+
+threading.Thread(target=CrawlerHouseByCityCode,args=("5101",)).start()
+
+
+threading.Thread(target=CrawlerHouseByCityCode,args=("5001",)).start()
+
+threading.Thread(target=CrawlerHouseByCityCode,args=("4201",)).start()
+
