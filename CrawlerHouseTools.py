@@ -7,7 +7,7 @@ import time
 from bs4 import  BeautifulSoup
 import math
 
-def addLianjiaHouseFromWeb(url,fromWeb):
+def addLianjiaHouseFromWeb(url,fromWeb,cityCode):
     try:
         res = requests.get(url=url).content;
         total_json = json.loads(res);
@@ -35,7 +35,7 @@ def addLianjiaHouseFromWeb(url,fromWeb):
     except Exception as e:
         print(e);
 
-def addZiRuFromWeb(url,fromWeb):
+def addZiRuFromWeb(url,fromWeb,cityCode):
     try:
         headers = {
             'User-Agent': 'Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/63.0.3239.132 Safari/537.36'
@@ -71,7 +71,7 @@ def addZiRuFromWeb(url,fromWeb):
         print(e);
 
 
-def addIShangZuHouseFromWeb(url,fromWeb):
+def addIShangZuHouseFromWeb(url,fromWeb,cityCode):
     try:
         headers = {
             'User-Agent': 'Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/63.0.3239.132 Safari/537.36'
@@ -111,7 +111,7 @@ def addIShangZuHouseFromWeb(url,fromWeb):
     except Exception as e:
         print(e);
 
-def addDanKeHouseFromWebCookie(url,fromWeb,houseTabUrl):
+def addDanKeHouseFromWebCookie(url,fromWeb,houseTabUrl,cityCode):
     print(url)
     headers = {
         'User-Agent': 'Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/63.0.3239.132 Safari/537.36',
@@ -161,7 +161,7 @@ def getAnjuKeHousePageCount(url):
     return  pages;
 
 
-def addAnJuKeHouseFromWeb(url,fromWeb):
+def addAnJuKeHouseFromWeb(url,fromWeb,cityCode):
     print(url)
     try:
         print(url)
@@ -194,7 +194,7 @@ def addAnJuKeHouseFromWeb(url,fromWeb):
     except Exception as e:
         print(e);
 
-def addFangTianXiaHouseFromWeb(url,fromWeb):
+def addFangTianXiaHouseFromWeb(url,fromWeb,cityCode):
     try:
         print(url)
         res = requests.get(url=url).content;
@@ -232,7 +232,7 @@ def addFangTianXiaHouseFromWeb(url,fromWeb):
     except Exception as e:
         print(e);
 
-def addWoAiWoJiaHouseFromWeb(url,fromWeb):
+def addWoAiWoJiaHouseFromWeb(url,fromWeb,cityCode):
     print(url)
     try:
         headers = {
@@ -263,6 +263,7 @@ def addWoAiWoJiaHouseFromWeb(url,fromWeb):
                         recordDict["community_name"] = name;
                         recordDict["area"] = area;
                         recordDict["fromWeb"] = fromWeb;
+                        recordDict["cityCode"]=cityCode;
                         records.append(recordDict);
                     addOneHouseIntoDB(records);
     except Exception as e:
@@ -279,8 +280,9 @@ def addOneHouseIntoDB(records):
         community_name = houseVo["community_name"];
         price = houseVo["price"];
         fromWeb=houseVo["fromWeb"];
+        cityCode = houseVo["cityCode"];
         currentDate = time.strftime("%Y-%m-%d", time.localtime());
-        sql="INSERT INTO web_house (house_id, house_area, community_id, community_name, house_price, frow_web, create_time) VALUES ('"+str(hosuse_id)+"', '"+str(area)+"', '"+str(communityId)+"', '"+community_name+"', '"+str(price)+"', '"+fromWeb+"', '"+currentDate+"');"
+        sql="INSERT INTO web_house (house_id, house_area, community_id, community_name, house_price, frow_web, create_time,city_code) VALUES ('"+str(hosuse_id)+"', '"+str(area)+"', '"+str(communityId)+"', '"+community_name+"', '"+str(price)+"', '"+fromWeb+"', '"+currentDate+"','"+cityCode+"');"
         print(sql)
         try:
             cur.execute(sql);

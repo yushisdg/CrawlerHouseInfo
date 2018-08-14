@@ -21,8 +21,8 @@ def CrawlerHouseByCityCode(cityCode):
            ymin=gridDict['ymin'];
            xmax=gridDict['xmax'] ;
            ymax=gridDict['ymax'];
-           queryWhereCityByItem(xmin,ymin,xmax,ymax);
-           sleepTime = random.randint(10, 15);
+           queryWhereCityByItem(xmin,ymin,xmax,ymax,cityCode);
+           sleepTime = random.randint(15, 25);
            print(sleepTime);
            time.sleep(sleepTime);
     return 0;
@@ -30,7 +30,7 @@ def CrawlerHouseByCityCode(cityCode):
 def queryCommunityByEnvelop(xmin,ymin,xmax,ymax):
     return 0;
 
-def queryWhereCityByItem(xmin,ymin,xmax,ymax):
+def queryWhereCityByItem(xmin,ymin,xmax,ymax,cityCode):
     centX = (xmin + xmax) / 2;
     centY = (ymin + ymax) / 2;
     cityName=queryPointInWhereCity(centX,centY);
@@ -42,25 +42,25 @@ def queryWhereCityByItem(xmin,ymin,xmax,ymax):
              houseUrl=item["data"]["houseUrl"];
              if(fromWeb=="lianjia"):
                  print("--------")
-                 queryLianjiaCommunityByEnvelope(xmin, ymin, xmax, ymax, comUrl, houseUrl, fromWeb);
+                 queryLianjiaCommunityByEnvelope(xmin, ymin, xmax, ymax, comUrl, houseUrl, fromWeb,cityCode);
              elif(fromWeb=="anjuke"):
                  print("--------")
-                 queryAnjuKeCommunityByEnvelope(xmin, ymin, xmax, ymax, comUrl, houseUrl, fromWeb);
+                 queryAnjuKeCommunityByEnvelope(xmin, ymin, xmax, ymax, comUrl, houseUrl, fromWeb,cityCode);
              elif (fromWeb == "dankegongyu"):
                  print(fromWeb)
-                 queryDanKeGongYuCommunityByEnvelope(xmin, ymin, xmax, ymax, comUrl, houseUrl, fromWeb);
+                 queryDanKeGongYuCommunityByEnvelope(xmin, ymin, xmax, ymax, comUrl, houseUrl, fromWeb,cityCode);
              elif (fromWeb == "woaiwojia"):
                  print("--------")
-                 queryWoaiWoJiaCommunityByEnvelope(xmin, ymin, xmax, ymax, comUrl, houseUrl, fromWeb);
+                 queryWoaiWoJiaCommunityByEnvelope(xmin, ymin, xmax, ymax, comUrl, houseUrl, fromWeb,cityCode);
              elif (fromWeb == "ishangzu"):
                  print("--------")
-                 queryIShangzuCommunityByEnvelope(xmin, ymin, xmax, ymax, comUrl, houseUrl, fromWeb);
+                 queryIShangzuCommunityByEnvelope(xmin, ymin, xmax, ymax, comUrl, houseUrl, fromWeb,cityCode);
              elif (fromWeb == "ziru"):
                  print("----------")
-                 queryZiRuCommunityByEnvelope(xmin, ymin, xmax, ymax, comUrl, houseUrl, fromWeb);
+                 queryZiRuCommunityByEnvelope(xmin, ymin, xmax, ymax, comUrl, houseUrl, fromWeb,cityCode);
              elif (fromWeb == "fangtianxia"):
                  print("--------")
-                 queryFangTianxiaCommunityByEnvelope(xmin, ymin, xmax, ymax, comUrl, houseUrl, fromWeb);
+                 queryFangTianxiaCommunityByEnvelope(xmin, ymin, xmax, ymax, comUrl, houseUrl, fromWeb,cityCode);
              else:
                  print(fromWeb)
     return cityName;
@@ -101,7 +101,7 @@ def getWebResourceUrl(cityName):
         conn.close();
 
 #获取链家的数据
-def queryLianjiaCommunityByEnvelope(xmin,ymin, xmax, ymax, comUrl,houseTabUrl, fromWeb):
+def queryLianjiaCommunityByEnvelope(xmin,ymin, xmax, ymax, comUrl,houseTabUrl, fromWeb,cityCode):
     fromWeb = "lianjia";
     baiduMinPoint = bd_encrypt(xmin,ymin);
     baiduMaxPoint = bd_encrypt(xmax,ymax);
@@ -132,14 +132,15 @@ def queryLianjiaCommunityByEnvelope(xmin,ymin, xmax, ymax, comUrl,houseTabUrl, f
                 communityVos.append(recordDict);
                 idArr.append(id);
             addOneCommunityIntoDB(communityVos);
+            addOneCommunityTimeIntoDB(communityVos);
             for ids in idArr:
                 reqUrl=houseUrl+ids;
-                addLianjiaHouseFromWeb(reqUrl,fromWeb);
+                addLianjiaHouseFromWeb(reqUrl,fromWeb,cityCode);
                 time.sleep(1);
     except Exception as e:
         print(e);
 
-def queryAnjuKeCommunityByEnvelope(xmin,ymin, xmax, ymax, comUrl,houseTabUrl, fromWeb):
+def queryAnjuKeCommunityByEnvelope(xmin,ymin, xmax, ymax, comUrl,houseTabUrl, fromWeb,cityCode):
     fromWeb = "anjuke";
     baiduMinPoint = bd_encrypt(xmin, ymin);
     baiduMaxPoint = bd_encrypt(xmax, ymax);
@@ -171,21 +172,23 @@ def queryAnjuKeCommunityByEnvelope(xmin,ymin, xmax, ymax, comUrl,houseTabUrl, fr
                 recordDict["latitude"] = latitude;
                 recordDict["fromWeb"] = fromWeb;
                 recordDict["communityPrice"] = communityPrice;
+                recordDict["cityCode"] = cityCode;
                 communityVos.append(recordDict);
                 idArr.append(id);
             addOneCommunityIntoDB(communityVos);
+            addOneCommunityTimeIntoDB(communityVos);
             if(len(idArr)>0):
                 pages=getAnjuKeHousePageCount(houseUrl);
                 for page in range(1,pages):
                     tempUrl=houseUrl+"&p="+str(page);
-                    addAnJuKeHouseFromWeb(tempUrl,fromWeb);
+                    addAnJuKeHouseFromWeb(tempUrl,fromWeb,cityCode);
                     sleepTime = random.randint(3, 6);
                     print(sleepTime);
                     time.sleep(sleepTime);
     except Exception as e:
         print(e);
 
-def queryIShangzuCommunityByEnvelope(xmin,ymin, xmax, ymax, comUrl,houseTabUrl, fromWeb):
+def queryIShangzuCommunityByEnvelope(xmin,ymin, xmax, ymax, comUrl,houseTabUrl, fromWeb,cityCode):
     centX = (xmin + xmax) / 2;
     centY = (ymin + ymax) / 2;
     radius = 1;
@@ -216,16 +219,18 @@ def queryIShangzuCommunityByEnvelope(xmin,ymin, xmax, ymax, comUrl,houseTabUrl, 
                 recordDict["longitude"] = longitude;
                 recordDict["latitude"] = latitude;
                 recordDict["fromWeb"] = fromWeb;
+                recordDict["cityCode"] = cityCode;
                 recordDict["communityPrice"] = 0;
                 communityVos.append(recordDict);
                 idArr.append(id);
             addOneCommunityIntoDB(communityVos);
-            addIShangZuHouseFromWeb(houseUrl, fromWeb)
+            addOneCommunityTimeIntoDB(communityVos);
+            addIShangZuHouseFromWeb(houseUrl, fromWeb,cityCode)
     except Exception as e:
         print(e);
 
 
-def queryZiRuCommunityByEnvelope(xmin,ymin, xmax, ymax, comUrl,houseTabUrl, fromWeb):
+def queryZiRuCommunityByEnvelope(xmin,ymin, xmax, ymax, comUrl,houseTabUrl, fromWeb,cityCode):
     fromWeb="ziru";
     baiduMinPoint = bd_encrypt(xmin, ymin);
     baiduMaxPoint = bd_encrypt(xmax, ymax);
@@ -257,15 +262,17 @@ def queryZiRuCommunityByEnvelope(xmin,ymin, xmax, ymax, comUrl,houseTabUrl, from
                 recordDict["latitude"] = latitude;
                 recordDict["fromWeb"] = fromWeb;
                 recordDict["communityPrice"] = 0;
+                recordDict["cityCode"] = cityCode;
                 communityVos.append(recordDict);
                 idArr.append(id);
             addOneCommunityIntoDB(communityVos);
-            addZiRuFromWeb(houseUrl,fromWeb)
+            addOneCommunityTimeIntoDB(communityVos);
+            addZiRuFromWeb(houseUrl,fromWeb,cityCode)
     except Exception as e:
         print(e);
 
 #获取我爱我家数据
-def queryWoaiWoJiaCommunityByEnvelope(xmin,ymin, xmax, ymax, comUrl,houseTabUrl, fromWeb):
+def queryWoaiWoJiaCommunityByEnvelope(xmin,ymin, xmax, ymax, comUrl,houseTabUrl, fromWeb,cityCode):
     fromWeb = "woaiwojia";
     baiduMinPoint = bd_encrypt(xmin, ymin);
     baiduMaxPoint = bd_encrypt(xmax, ymax);
@@ -301,12 +308,14 @@ def queryWoaiWoJiaCommunityByEnvelope(xmin,ymin, xmax, ymax, comUrl,houseTabUrl,
                     recordDict["latitude"] = latitude;
                     recordDict["fromWeb"] = fromWeb;
                     recordDict["communityPrice"] = communityPrice;
+                    recordDict["cityCode"] = cityCode;
                     communityVos.append(recordDict);
                     idArr.append(str(id));
                 addOneCommunityIntoDB(communityVos);
+                addOneCommunityTimeIntoDB(communityVos);
                 for ids in idArr:
                     reqUrl = url+"&locationId=" + ids+"&locationLevel=5&pageSize=20&page=1"
-                    addWoAiWoJiaHouseFromWeb(reqUrl,fromWeb);
+                    addWoAiWoJiaHouseFromWeb(reqUrl,fromWeb,cityCode);
                     sleepTime = random.randint(3, 6);
                     print(sleepTime);
                     time.sleep(sleepTime);
@@ -315,7 +324,7 @@ def queryWoaiWoJiaCommunityByEnvelope(xmin,ymin, xmax, ymax, comUrl,houseTabUrl,
     return 0;
 
 #获取房天下数据
-def queryFangTianxiaCommunityByEnvelope(xmin,ymin, xmax, ymax, comUrl,houseTabUrl, fromWeb):
+def queryFangTianxiaCommunityByEnvelope(xmin,ymin, xmax, ymax, comUrl,houseTabUrl, fromWeb,cityCode):
     fromWeb = "fangtianxia";
     baiduMinPoint = bd_encrypt(xmin, ymin);
     baiduMaxPoint = bd_encrypt(xmax, ymax);
@@ -346,17 +355,19 @@ def queryFangTianxiaCommunityByEnvelope(xmin,ymin, xmax, ymax, comUrl,houseTabUr
                     recordDict["latitude"] = latitude;
                     recordDict["fromWeb"] = fromWeb;
                     recordDict["communityPrice"] = communityPrice;
+                    recordDict["cityCode"] = cityCode;
                     communityVos.append(recordDict);
                     idArr.append(id);
                 addOneCommunityIntoDB(communityVos);
+                addOneCommunityTimeIntoDB(communityVos);
                 for ids in idArr:
                     reqUrl = houseUrl+"&newCode=" + ids;
-                    addFangTianXiaHouseFromWeb(reqUrl,fromWeb);
+                    addFangTianXiaHouseFromWeb(reqUrl,fromWeb,cityCode);
                     time.sleep(1);
     except Exception as e:
         print(e);
 
-def queryDanKeGongYuCommunityByEnvelope(xmin,ymin, xmax, ymax, comUrl,houseTabUrl, fromWeb):
+def queryDanKeGongYuCommunityByEnvelope(xmin,ymin, xmax, ymax, comUrl,houseTabUrl, fromWeb,cityCode):
     fromWeb = "dankegongyu";
     baiduMinPoint = bd_encrypt(xmin, ymin);
     baiduMaxPoint = bd_encrypt(xmax, ymax);
@@ -389,10 +400,12 @@ def queryDanKeGongYuCommunityByEnvelope(xmin,ymin, xmax, ymax, comUrl,houseTabUr
                     recordDict["latitude"] = latitude;
                     recordDict["fromWeb"] = fromWeb;
                     recordDict["communityPrice"] = 0;
+                    recordDict["cityCode"] = cityCode;
                     communityVos.append(recordDict);
                     idArr.append(id);
                 addOneCommunityIntoDB(communityVos);
-                addDanKeHouseFromWebCookie(url,fromWeb,houseTabUrl)
+                addOneCommunityTimeIntoDB(communityVos);
+                addDanKeHouseFromWebCookie(url,fromWeb,houseTabUrl,cityCode)
     except Exception as e:
         print(e);
 
@@ -407,13 +420,14 @@ def addOneCommunityIntoDB(communityVos):
         latitude = communityVo["latitude"];
         communityPrice=communityVo["communityPrice"];
         fromWeb=communityVo["fromWeb"];
+        cityCode=communityVo["cityCode"];
         gaodePoint = bd_decrypt(float(longitude),float(latitude));
         geomStr="";
         if(fromWeb=="ishangzu"):
             geomStr = "POINT(" + str(longitude) + " " + str(latitude) + ")";
         else:
             geomStr = "POINT(" + str(gaodePoint["lng"]) + " " + str(gaodePoint["lat"]) + ")";
-        sql="INSERT INTO web_community (id, name, longitude, latitude, geom, from_web, community_price) VALUES ('"+str(id)+"', '"+name+"', '"+str(longitude)+"', '"+str(latitude)+"', "+"st_geomfromText('"+geomStr+"',4326)"+", '"+fromWeb+"', '"+str(communityPrice)+"');";
+        sql="INSERT INTO web_community (id, name, longitude, latitude, geom, from_web, community_price,city_code) VALUES ('"+str(id)+"', '"+name+"', '"+str(longitude)+"', '"+str(latitude)+"', "+"st_geomfromText('"+geomStr+"',4326)"+", '"+fromWeb+"', '"+str(communityPrice)+"','"+cityCode+"');";
         print(sql)
         try:
             cur.execute(sql);
@@ -426,7 +440,26 @@ def addOneCommunityIntoDB(communityVos):
     conn.close();
 
 
-
+def addOneCommunityTimeIntoDB(communityVos):
+    conn = psycopg2.connect(database=dataBase, user=user, password=password, host=host, port=port);
+    cur = conn.cursor();
+    currentDate = time.strftime("%Y-%m-%d", time.localtime());
+    for communityVo in communityVos:
+        id=communityVo["id"];
+        communityPrice=communityVo["communityPrice"];
+        fromWeb=communityVo["fromWeb"];
+        cityCode=communityVo["cityCode"];
+        sql="INSERT INTO web_community_time (id, from_web, community_price,city_code,create_time) VALUES ('"+str(id)+"', '"+fromWeb+"', '"+str(communityPrice)+"','"+cityCode+"', '"+currentDate+"');";
+        print(sql)
+        try:
+            cur.execute(sql);
+            conn.commit();
+        except Exception as e:
+            print(e);
+        finally:
+            conn.commit();
+    cur.close();
+    conn.close();
 
 
 # CrawlerHouseByCityCode("3101");
@@ -452,9 +485,9 @@ threading.Thread(target=CrawlerHouseByCityCode,args=("3501",)).start()
 threading.Thread(target=CrawlerHouseByCityCode,args=("3502",)).start()
 
 
-# threading.Thread(target=CrawlerHouseByCityCode,args=("3101",)).start()
+threading.Thread(target=CrawlerHouseByCityCode,args=("3101",)).start()
 #
-# threading.Thread(target=CrawlerHouseByCityCode,args=("3301",)).start()
+threading.Thread(target=CrawlerHouseByCityCode,args=("3301",)).start()
 
 threading.Thread(target=CrawlerHouseByCityCode,args=("3601",)).start()
 
