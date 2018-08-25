@@ -32,15 +32,20 @@ def SelectGridByCityCodeAndIndex(cityCode,gridIndex):
         keyData = cur.fetchall();
         datalength=len(keyData);
         if(datalength>0):
+            print(keyData)
             minY = keyData[0][0];
             maxY = keyData[0][1];
             minX = keyData[0][2];
             maxX =keyData[0][3];
+            centerX=keyData[0][7];
+            centerY = keyData[0][8];
             indexDict = {};
             indexDict['xmin'] = minX;
             indexDict['ymin'] = minY;
             indexDict['xmax'] = maxX;
             indexDict['ymax'] = maxY;
+            indexDict['centerX'] = centerX;
+            indexDict['centerY'] = centerY;
             cur.close();
             conn.close();
             return indexDict;
@@ -55,4 +60,25 @@ def SelectGridByCityCodeAndIndex(cityCode,gridIndex):
         conn.close();
 
 
-
+def getCityCodeByCityName(cityName):
+    conn = psycopg2.connect(database=dataBase, user=user, password=password, host=host, port=port);
+    cur = conn.cursor();
+    sql = "SELECT * from major_city_code where name='" + cityName + "'";
+    try:
+        cur.execute(sql);
+        keyData = cur.fetchall();
+        name = keyData[0][0];
+        cityCode = keyData[0][1];
+        baiduCode=keyData[0][2];
+        gaodeCode=keyData[0][3];
+        indexDict = {};
+        indexDict['name'] = name;
+        indexDict['cityCode'] = cityCode;
+        indexDict['baiduCode'] = baiduCode;
+        indexDict['gaodeCode'] = gaodeCode;
+        return indexDict;
+    except Exception as e:
+        print(e);
+    finally:
+        cur.close();
+        conn.close();

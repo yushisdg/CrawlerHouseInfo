@@ -2,6 +2,8 @@ import urllib.request
 import requests
 import json
 from CrawlerHouseInfo.BaiduConventor import *;
+from CrawlerHouseInfo.jdbcConfig import *
+import psycopg2
 
 def queryPointInWhereCity(x,y):
     location=convertLL2MC(x,y);
@@ -21,3 +23,4 @@ def queryPointInWhereCity(x,y):
     except Exception as e:
         print(e);
     return cityName;
+
