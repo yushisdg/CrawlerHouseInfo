@@ -82,3 +82,34 @@ def getCityCodeByCityName(cityName):
     finally:
         cur.close();
         conn.close();
+
+def getCityEnvelopeByCityName(cityName):
+    indexDict=getCityCodeByCityName(cityName);
+    cityCode=indexDict["cityCode"][0:4];
+    conn = psycopg2.connect(database=dataBase, user=user, password=password, host=host, port=port);
+    cur = conn.cursor();
+    sql = "SELECT ST_YMin (envelope) minY,ST_YMax(envelope) maxY,ST_XMin (envelope) minX,	ST_XMax (envelope) maxX FROM (SELECT	ST_Envelope (	ST_Collect (	ARRAY (	SELECT	T .geom	FROM	geomtools_grid T WHERE T .code LIKE '"+cityCode+"%'))) envelope) K";
+    try:
+        cur.execute(sql);
+        keyData = cur.fetchall();
+        minY = keyData[0][0];
+        maxY = keyData[0][1];
+        minX = keyData[0][2];
+        maxX = keyData[0][3];
+        indexDict = {};
+        indexDict['minY'] = minY;
+        indexDict['maxY'] = maxY;
+        indexDict['minX'] = minX;
+        indexDict['maxX'] = maxX;
+        print(indexDict)
+        return indexDict;
+    except Exception as e:
+        print(e);
+    finally:
+        cur.close();
+        conn.close();
+    return;
+
+
+
+
