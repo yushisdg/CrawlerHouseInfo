@@ -73,7 +73,10 @@ def getPoiInfoByUid(uid):
         print(e);
 
 #根据关键字查询
-def getBaiduPoiByKeyWord(keyWord,cityCode,sug_forward):
+def getBaiduPoiByKeyWord(keyWord,cityName,sug_forward):
+    cityCodeDict = getCityCodeByCityName(cityName);
+    cityCode = cityCodeDict["baiduCode"];
+    print(cityCode)
     url = "https://map.baidu.com/?qt=s&sug=1&wd=" + str(keyWord)+"&c="+str(cityCode)+"&sug_forward="+sug_forward;
     print(url)
     try:
@@ -84,7 +87,6 @@ def getBaiduPoiByKeyWord(keyWord,cityCode,sug_forward):
         total_json = json.loads(html_doc);
         content = total_json.get('content');
         place_info=total_json.get("place_info");
-        print(content)
         if(content!=None):
             pois=[];
             print("----------------------------------------------")
@@ -322,18 +324,39 @@ def getSugForward(kw,citycode):
     except Exception as e:
         print(e);
 
-
-def getSuggest():
-    url="https://map.baidu.com/su?wd=%E5%AE%9C%E6%98%A5%E7%A2%A7%E6%A1%82%E5%9B%AD&cid=278&type=0&newmap=1&b=(12729278.509396743%2C3203140.4224371267%3B12731449.044558436%2C3205381.73591931)";
+#获取智能提示
+def getSuggest(kw,cityName):
+    cityCodeDict=getCityCodeByCityName(cityName);
+    baiduCityCode=cityCodeDict["baiduCode"];
+    envelope=getCityEnvelopeByCityName(cityName);
+    minY=envelope['minY'] ;
+    maxY=envelope['maxY'] ;
+    minX=envelope['minX'] ;
+    maxX=envelope['maxX'];
+    minXY=convertLL2MC(minX,minY);
+    maxXY=convertLL2MC(maxX,maxY);
+    minLng=minXY["x"];
+    minLat=minXY["y"];
+    maxLng=maxXY["x"];
+    maxLat=maxXY["y"]
+    url = "https://map.baidu.com/su?wd=" + str(kw) + "&cid=" + str(baiduCityCode) + "&type=0&newmap=1&b=(" + str(minLng) + "%2c" + str(minLat) + "%3B" + str(maxLng) + "%2C" + str(maxLat) + ")" + "&pc_ver=2";
     print(url)
     try:
         headers = {
             'User-Agent': 'Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/63.0.3239.132 Safari/537.36'
         }
         html_doc = requests.get(url, timeout=30, headers=headers).content
-
         total_json = json.loads(html_doc);
-        print(total_json.get("s"))
+        sus=total_json.get("s");
+        vos=[];
+        for s in sus:
+            sArr=s.split("$");
+            sVo={};
+            sVo["name"]=sArr[3];
+            sVo["uid"]=sArr[5];
+            print(sVo)
+            vos.append(sVo);
+        return vos;
     except Exception as e:
         print(e);
 
@@ -341,17 +364,21 @@ def getSuggest():
 def crawlerBaiduRegion():
     keywords = getComsRow();
     for keyword in keywords:
-        name = keyword[0];
-        name="宜春碧桂园"
-        sug_forward=getSugForward(name,278);
+        name = "宜春"+keyword[0];
+        sug_forward=getSuggest(name,"宜春市");
         if(sug_forward!=None):
-            getBaiduPoiByKeyWord(name, 278,sug_forward);
-            sleepTime = random.randint(1, 2);
-            print(sleepTime);
-            time.sleep(sleepTime);
+            for item in sug_forward:
+                kw=item["name"];
+                uid=item["uid"];
+                getBaiduPoiByKeyWord(name, "宜春市",uid);
+                sleepTime = random.randint(1, 2);
+                print(sleepTime);
+                time.sleep(sleepTime);
 
-#crawlerBaiduRegion();
+crawlerBaiduRegion();
 #batchgetBaiduPoiByKeyWord();
 # getBaiduPoiByKeyWord('宜春碧桂园',278);
 
-getSuggest();
+#getSuggest("宜春碧桂园","宜春市");
+
+
