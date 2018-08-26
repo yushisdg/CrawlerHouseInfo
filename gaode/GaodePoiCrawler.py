@@ -1,11 +1,11 @@
-import requests
 import json
-import time
-from pandas import DataFrame
-import psycopg2
 import math
-from CrawlerHouseInfo.jdbcConfig import *
+import time
 
+import psycopg2
+import requests
+
+from CrawlerHouseInfo.config.jdbcConfig import *
 
 pages=1;
 

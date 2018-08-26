@@ -1,6 +1,6 @@
 import psycopg2
-from CrawlerHouseInfo.jdbcConfig import *
 
+from CrawlerHouseInfo.config.jdbcConfig import *
 
 
 def getCityGridsMinIndexAndMaxIndexByCityCode(cityCode):

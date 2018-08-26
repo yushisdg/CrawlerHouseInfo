@@ -1,14 +1,9 @@
-import psycopg2
-from CrawlerHouseInfo.CityGridTools import *
-from CrawlerHouseInfo.MapTools import *
-from CrawlerHouseInfo.jdbcConfig import *
-from CrawlerHouseInfo.Tools.CoodinateCovertor import *
-import urllib.request
-import requests
-import json
-import random
-from CrawlerHouseInfo.CrawlerHouseTools import *
 import threading
+import random
+from CrawlerHouseInfo.Tools.CoodinateCovertor import *
+from CrawlerHouseInfo.Tools.MapTools import *
+from CrawlerHouseInfo.community.CrawlerHouseTools import *
+
 
 def CrawlerHouseByCityCode(cityCode):
     print(cityCode)

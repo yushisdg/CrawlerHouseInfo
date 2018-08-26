@@ -1,15 +1,11 @@
-import requests
 import json
-import time
-from pandas import DataFrame
-import psycopg2
-import math
 import random
-import sys
-import sys
-from urllib.request import urlopen
-from CrawlerHouseInfo.jdbcConfig import *
+import time
 
+import psycopg2
+import requests
+from CrawlerHouseInfo.Tools.MapTools import *
+from CrawlerHouseInfo.config.jdbcConfig import *
 
 
 def getOneResidentialDate(id):
@@ -52,6 +48,7 @@ def getOneResidentialDate(id):
             base="";
             spec = data.get('spec');
             mining_shape = spec.get("mining_shape");
+
             name="";
             region_id="";
             city_code = "";
@@ -67,24 +64,39 @@ def getOneResidentialDate(id):
             property_fee = "";
             area_total = "";
             if mining_shape != None:
+
                 base = data.get('base');
                 name = base.get("name");
                 region_id = base.get("poiid");
                 city_code = base.get("city_adcode");
                 city_name = base.get("city_name");
+
                 tag = base.get("tag");
+
                 address = base.get("address");
                 residential = data.get("residential");
+
                 if residential != None:
-                    service_parking = residential.get("service_parking");
-                    green_rate = residential.get("green_rate");
-                    opening_data = residential.get("opening_data");
-                    price = residential.get("price");
-                    volume_rate = str(residential.get("volume_rate"));
-                    intro = residential.get("intro");
-                    property_fee = residential.get("property_fee");
-                    area_total = residential.get("area_total");
+                    # service_parking = residential.get("service_parking");
+                    # green_rate = residential.get("green_rate");
+                    # opening_data = residential.get("opening_data");
+                    # price = residential.get("price");
+                    # volume_rate = str(residential.get("volume_rate"));
+                    # print("-----------------------------------------")
+                    # intro = residential.get("intro");
+                    # property_fee = residential.get("property_fee");
+                    # area_total = residential.get("area_total");
+                    service_parking = "";
+                    green_rate = ""
+                    opening_data = ""
+                    price = ""
+                    volume_rate ="";
+                    print("-----------------------------------------")
+                    intro = "";
+                    property_fee = "";
+                    area_total = "";
                 shape = mining_shape.get("shape");
+                # insertIntoShpe(shape);
                 geomStr=shape.replace(',',' ').replace(';',',');
                 center = mining_shape.get("center");
                 area = mining_shape.get("area");
@@ -142,15 +154,30 @@ def getOneResidentialDate(id):
         sql = "INSERT INTO gaode_poi_disable (region_id,reason) VALUES ('" + id + "','" + reason + "');"
         cur.execute(sql);
         conn.commit();
+    cur.close();
+    conn.close();
 
 
-
+def insertIntoShpe(shpe):
+    pointsStr=shpe.split(";");
+    points=[];
+    for pointStr in pointsStr:
+        pointDict={};
+        point=pointStr.split(",");
+        lng=point[0];
+        lat=point[1];
+        pointDict["lng"]=lng;
+        pointDict["lat"] = lat;
+        points.append(pointDict);
+    InserIntoTestPoint(points);
+    return 0;
 
 
 def batchGetResidential(typecode,citycode):
     a = 1;
     while a == 1:
         sql = "SELECT id from gaode_poi t where t.typecode like '"+str(typecode)+"%' and citycode='"+str(citycode)+"' and t.id not in (select region_id from gaode_polygon ) and t.id not in (select region_id from gaode_poi_disable ) limit 1;";
+        print(sql)
         conn = psycopg2.connect(database=dataBase, user=user, password=password, host=host, port=port);
         cur = conn.cursor();
         cur.execute(sql);
@@ -158,8 +185,6 @@ def batchGetResidential(typecode,citycode):
         uid = keyData[0][0];
         if uid!=None:
             getOneResidentialDate(uid);
-
-
             sleepTime=random.randint(3, 6);
 
             print(sleepTime);

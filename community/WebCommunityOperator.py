@@ -1,15 +1,7 @@
-import psycopg2
-from CrawlerHouseInfo.CityGridTools import *
-from CrawlerHouseInfo.MapTools import *
-from CrawlerHouseInfo.jdbcConfig import *
-from CrawlerHouseInfo.Tools.CoodinateCovertor import *
-import urllib.request
-import requests
-import json
-import random
-from CrawlerHouseInfo.CrawlerHouseTools import *
-import threading
 import uuid
+
+from CrawlerHouseInfo.community.CrawlerHouseTools import *
+
 
 def getOneNeedOpeCommunity():
     conn = psycopg2.connect(database=dataBase, user=user, password=password, host=host, port=port);

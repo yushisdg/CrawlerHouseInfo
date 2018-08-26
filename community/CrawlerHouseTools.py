@@ -1,11 +1,13 @@
-import psycopg2
-from CrawlerHouseInfo.CityGridTools import *
-from CrawlerHouseInfo.jdbcConfig import *
-import requests
 import json
-import time
-from bs4 import  BeautifulSoup
 import math
+import time
+
+import requests
+from bs4 import BeautifulSoup
+
+from CrawlerHouseInfo.Tools.CityGridTools import *
+from CrawlerHouseInfo.config.jdbcConfig import *
+
 
 def addLianjiaHouseFromWeb(url,fromWeb,cityCode):
     try:
