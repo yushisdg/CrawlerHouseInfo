@@ -366,6 +366,8 @@ def crawlerBaiduRegion():
     for keyword in keywords:
         name = "宜春"+keyword[0];
         sug_forward=getSuggest(name,"宜春市");
+        name = keyword[0];
+        sug_forward=getSugForward(name,278);
         if(sug_forward!=None):
             for item in sug_forward:
                 kw=item["name"];
@@ -379,6 +381,6 @@ crawlerBaiduRegion();
 #batchgetBaiduPoiByKeyWord();
 # getBaiduPoiByKeyWord('宜春碧桂园',278);
 
-#getSuggest("宜春碧桂园","宜春市");
 
+#getSuggest("宜春碧桂园","宜春市");
 
